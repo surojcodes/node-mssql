@@ -72,8 +72,27 @@ const getTodo = async (req, res) => {
 const updateTodo = (req, res) => {
   res.send('Update a todo');
 };
-const deleteTodo = (req, res) => {
-  res.send('Delete a todo');
+const deleteTodo = async (req, res) => {
+  const id = req.params.id;
+  //TODO: check if todo exists
+  try {
+    const result = await req.app.locals.db.query(`
+      DELETE FROM ${tableName}
+      WHERE id = ${id}
+    `);
+    if ((result.rowsAffected[0] = 1)) {
+      res.status(201).json({
+        success: true,
+        data: `Todo with id ${id} deleted.`,
+      });
+    }
+  } catch (err) {
+    console.log('Error while deleting todos:', err);
+    res.status(500).json({
+      success: false,
+      data: 'Error deleting todos',
+    });
+  }
 };
 
 module.exports = { getTodos, getTodo, createTodo, updateTodo, deleteTodo };
