@@ -128,11 +128,13 @@ const deleteTodo = async (req, res) => {
       DELETE FROM ${tableName}
       WHERE id = ${id}
     `);
-    if ((result.rowsAffected[0] = 1)) {
+    if (result.rowsAffected[0] === 1) {
       res.status(201).json({
         success: true,
         data: `Todo with id ${id} deleted.`,
       });
+    } else {
+      throw new Error('Error while deleting todos');
     }
   } catch (err) {
     console.log('Error while deleting todos:', err);
