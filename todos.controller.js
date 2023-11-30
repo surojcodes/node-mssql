@@ -9,7 +9,7 @@ const createTodo = async (req, res) => {
   }
   try {
     const result = await req.app.locals.db.query(`
-    INSERT INTO todos (title,description,createdAt,updatedAt)
+    INSERT INTO ${tableName} (title,description,createdAt,updatedAt)
     VALUES ('${title}','${description}',GETDATE(),GETDATE());
     `);
     if ((result.rowsAffected[0] = 1)) {
@@ -48,7 +48,7 @@ const getTodo = async (req, res) => {
   const id = req.params.id;
   try {
     const result = await req.app.locals.db.query(
-      `SELECT * from todos where id = ${id}`
+      `SELECT * from ${tableName} where id = ${id}`
     );
     if (!result || result.recordset.length === 0) {
       res.status(400).json({
