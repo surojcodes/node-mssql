@@ -91,7 +91,7 @@ const updateTodo = async (req, res) => {
     });
   }
   const { title, description } = req.body;
-  let sql = `UPDATE ${tableName} SET `;
+  let sql = `UPDATE ${tableName} SET updatedAt=GETDATE(), `;
   if (title) sql += `title='${title}'`;
   if (description) sql += `,description='${description}' `;
   sql += ` WHERE id = ${id}`;
