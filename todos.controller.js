@@ -1,3 +1,5 @@
+const sql = require('mssql');
+
 const tableName = 'todos';
 const createTodo = async (req, res) => {
   const { title, description } = req.body;
@@ -144,5 +146,46 @@ const deleteTodo = async (req, res) => {
     });
   }
 };
+//create todo using a stored procedure in sql server.
+const createTodoSP = async (req, res) => {
+  const { title, description } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({
+      success: false,
+      data: `Please provide both title and description`,
+    });
+  }
+  const inputParameters = { title, description };
+  const request = req.app.locals.db.request();
+  // Add input parameters to the request
+  Object.keys(inputParameters).forEach((paramName) => {
+    request.input(paramName, sql.NVarChar, inputParameters[paramName]);
+  });
+  //Execute SP
+  try {
+    const result = await request.execute('usp_insertTodo');
+    if ((result.rowsAffected[0] = 1)) {
+      res.status(201).json({
+        success: true,
+        data: 'Todo created',
+      });
+    } else {
+      throw new Error('Error creating todo via SP');
+    }
+  } catch (err) {
+    console.log('Error while creating todo via SP:', err);
+    res.status(500).json({
+      success: false,
+      data: 'Error creating todo',
+    });
+  }
+};
 
-module.exports = { getTodos, getTodo, createTodo, updateTodo, deleteTodo };
+module.exports = {
+  getTodos,
+  getTodo,
+  createTodo,
+  updateTodo,
+  deleteTodo,
+  createTodoSP,
+};

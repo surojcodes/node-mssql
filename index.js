@@ -9,6 +9,7 @@ const {
   createTodo,
   updateTodo,
   deleteTodo,
+  createTodoSP,
 } = require('./todos.controller');
 
 const appPool = new sql.ConnectionPool(config);
@@ -21,6 +22,8 @@ app.get('/api/todos', getTodos);
 app.get('/api/todos/:id', getTodo);
 app.patch('/api/todos/:id', updateTodo);
 app.delete('/api/todos/:id', deleteTodo);
+//using Stored Procedure
+app.post('/sp-api/todos', createTodoSP);
 
 //All other routes give 404
 app.all('*', (req, res) => {
