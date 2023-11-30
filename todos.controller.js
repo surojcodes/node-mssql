@@ -1,6 +1,30 @@
 const tableName = 'todos';
-const createTodo = (req, res) => {
-  res.send('Create a Todo');
+const createTodo = async (req, res) => {
+  const { title, description } = req.body;
+  if (!title || !description) {
+    return res.status(400).json({
+      success: false,
+      data: `Please provide both title and description`,
+    });
+  }
+  try {
+    const result = await req.app.locals.db.query(`
+    INSERT INTO todos (title,description,createdAt,updatedAt)
+    VALUES ('${title}','${description}',GETDATE(),GETDATE());
+    `);
+    if ((result.rowsAffected[0] = 1)) {
+      res.status(201).json({
+        success: true,
+        data: 'Todo created',
+      });
+    }
+  } catch (err) {
+    console.log('Error while creating todo:', err);
+    res.status(500).json({
+      success: false,
+      data: 'Error creating todo',
+    });
+  }
 };
 const getTodos = async (req, res) => {
   try {

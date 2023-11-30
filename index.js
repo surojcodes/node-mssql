@@ -13,6 +13,7 @@ const {
 
 const appPool = new sql.ConnectionPool(config);
 const app = express();
+app.use(express.json());
 
 //TODO Routes
 app.post('/api/todos', createTodo);
