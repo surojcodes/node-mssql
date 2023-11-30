@@ -69,12 +69,30 @@ const getTodo = async (req, res) => {
     });
   }
 };
+const findTodo = async (req, id) => {
+  try {
+    const result = await req.app.locals.db.query(
+      `SELECT * from ${tableName} where id = ${id}`
+    );
+    if (!result || result.recordset.length === 0) return 0;
+    else return 1;
+  } catch (err) {
+    console.log('Error while fetching todos:', err);
+    return 0;
+  }
+};
 const updateTodo = (req, res) => {
   res.send('Update a todo');
 };
 const deleteTodo = async (req, res) => {
   const id = req.params.id;
-  //TODO: check if todo exists
+  const todoExists = await findTodo(req, id);
+  if (!todoExists) {
+    return res.status(400).json({
+      success: false,
+      data: `Todo with id ${id} not found.`,
+    });
+  }
   try {
     const result = await req.app.locals.db.query(`
       DELETE FROM ${tableName}
