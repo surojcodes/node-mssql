@@ -19,6 +19,8 @@ const createTodo = async (req, res) => {
         success: true,
         data: 'Todo created',
       });
+    } else {
+      throw new Error('Error creating todo');
     }
   } catch (err) {
     console.log('Error while creating todo:', err);
