@@ -81,8 +81,38 @@ const findTodo = async (req, id) => {
     return 0;
   }
 };
-const updateTodo = (req, res) => {
-  res.send('Update a todo');
+const updateTodo = async (req, res) => {
+  const id = req.params.id;
+  const todoExists = await findTodo(req, id);
+  if (!todoExists) {
+    return res.status(400).json({
+      success: false,
+      data: `Todo with id ${id} not found.`,
+    });
+  }
+  const { title, description } = req.body;
+  let sql = `UPDATE ${tableName} SET `;
+  if (title) sql += `title='${title}'`;
+  if (description) sql += `,description='${description}' `;
+  sql += ` WHERE id = ${id}`;
+  console.log(sql);
+  try {
+    const result = await req.app.locals.db.query(sql);
+    if (result.rowsAffected[0] === 1) {
+      res.status(201).json({
+        success: true,
+        data: `Todo with id ${id} updated.`,
+      });
+    } else {
+      throw new Error('Error while updating todos');
+    }
+  } catch (err) {
+    console.log('Error while updating todos:', err);
+    res.status(500).json({
+      success: false,
+      data: 'Error updating todos',
+    });
+  }
 };
 const deleteTodo = async (req, res) => {
   const id = req.params.id;
