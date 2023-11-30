@@ -20,8 +20,30 @@ const getTodos = async (req, res) => {
     });
   }
 };
-const getTodo = (req, res) => {
-  res.send('Get a todo');
+const getTodo = async (req, res) => {
+  const id = req.params.id;
+  try {
+    const result = await req.app.locals.db.query(
+      `SELECT * from todos where id = ${id}`
+    );
+    if (!result || result.recordset.length === 0) {
+      res.status(400).json({
+        success: false,
+        data: `Todo with id ${id} not found.`,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        data: result.recordset,
+      });
+    }
+  } catch (err) {
+    console.log('Error while fetching todos:', err);
+    res.status(500).json({
+      success: false,
+      data: 'Error fetching todos',
+    });
+  }
 };
 const updateTodo = (req, res) => {
   res.send('Update a todo');
